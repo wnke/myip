@@ -2,6 +2,8 @@
 on:
   release:
     types: [created]
+permissions:
+  contents: write
 
 jobs:
   releases-matrix:
@@ -10,11 +12,13 @@ jobs:
     strategy:
       matrix:
         goos: [linux, windows, darwin]
-        goarch: ["386", amd64, arm64]
+        goarch: [amd64, arm64, arm]
         exclude:
-          - goarch: "386"
+          - goarch: "arm"
             goos: darwin
           - goarch: arm64
+            goos: windows
+          - goarch: arm
             goos: windows
     steps:
       - name: Check out code into the Go module directory
@@ -25,7 +29,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
 
-      - uses: wangyoucao577/go-release-action@v1
+      - uses: wangyoucao577/go-release-action@v1.34
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           build_flags: -trimpath
